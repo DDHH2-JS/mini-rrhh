@@ -14,7 +14,7 @@ const navItems = [
 function Header({ user, onLogout }: HeaderProps) {
   const { pathname } = useLocation();
   const displayUser = user ?? {
-    name: "Empleado de prueba 4",
+    name: "Gabriel Ochoa",
     role: "admin",
   };
 
