@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { mockEmployees } from '../utils/mockData';
 
 function DashboardPage() {
+  const userName = localStorage.getItem('userName') ?? 'Usuario';
   const total = mockEmployees.length;
   const active = mockEmployees.filter((employee) => employee.status === 'active').length;
   const onLeave = mockEmployees.filter((employee) => employee.status === 'on_leave').length;
@@ -16,15 +17,15 @@ function DashboardPage() {
     <main className="mx-auto max-w-7xl px-6 py-10">
       <section className="mb-10">
         <p className="text-sm text-slate-500">Resumen</p>
-        <h1 className="mt-2 text-3xl font-semibold text-slate-900">Bienvenido al panel</h1>
+        <h1 className="mt-2 text-3xl font-semibold text-slate-900">Bienvenido, {userName}</h1>
         <p className="mt-2 text-slate-600">Aquí puedes ver el estado actual de tu equipo y gestionar empleados.</p>
       </section>
 
-      <div className="grid gap-5 md:grid-cols-3 mb-10">
+      <div className="mb-10 flex flex-col gap-5 sm:flex-row">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="rounded-4xl p-6 shadow-sm"
+            className="flex-1 rounded-4xl p-6 shadow-sm transition-shadow duration-200 hover:shadow-lg"
             style={{ background: stat.color }}
           >
             <p className="text-sm font-medium" style={{ color: stat.textColor }}>
