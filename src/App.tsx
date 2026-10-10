@@ -2,132 +2,135 @@
 
 import type { ReactNode } from 'react';
 import {
+  BrowserRouter,
   Routes,
   Route,
   Navigate,
-  Link,
   useNavigate
 } from 'react-router-dom';
 
-import Header from './layouts/Header';
+import { Toaster } from 'react-hot-toast';
+
+import Header from './layout/Header';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import EmployeesPage from './pages/EmployeesPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import type { User } from './types';
+import { useAuthStore } from './store/authStore';
+import EmployeeDetailPage from './pages/EmployeeDetailPage';
+import NotFoundPage from './pages/NotFoundPage';
 
-// Layout para páginas autenticadas
+// Layout con Header PARA páginas autenticadas
 function AppLayout({ children }: { children: ReactNode }) {
+  const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
-  const role = localStorage.getItem('userRole') as User['role'] | null;
-  const name = localStorage.getItem('userName') || '';
-
-  const user = role
-    ? ({
-        id: 1,
-        name,
-        email: '',
-        role,
-        token: ''
-      } as User)
-    : undefined;
+ 
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userName');
-
-    navigate('/login');
+   logout();
+navigate('/login');
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#f8fafc'
-      }}
-    >
-      <Header
-        user={user}
-        onLogout={handleLogout}
-      />
-
+    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+      <Header user={user ?? undefined} onLogout={handleLogout} />
       <main>{children}</main>
     </div>
   );
 }
 
+
 function App() {
   return (
-    <Routes>
+    <BrowserRouter>
+    
+      <Routes>
 
-      {/* Ruta pública */}
-      <Route
-        path="/login"
-        element={<LoginPage />}
-      />
+        {/* Ruta pública */}
 
-      {/* Rutas protegidas */}
-      <Route element={<ProtectedRoute />}>
 
-        {/* Dashboard */}
+
+        <Route
+          path="/login"
+          element={<LoginPage />}
+        />
+
+        {/* Rutas protegidas */}
         <Route
           path="/dashboard"
           element={
-            <AppLayout>
-              <DashboardPage />
-            </AppLayout>
+            <ProtectedRoute>
+              <AppLayout>
+                <DashboardPage />
+              </AppLayout>
+            </ProtectedRoute>
           }
         />
 
-        {/* Empleados */}
         <Route
           path="/empleados"
           element={
-            <AppLayout>
-              <EmployeesPage />
-            </AppLayout>
+            <ProtectedRoute>
+              <AppLayout>
+                <EmployeesPage />
+              </AppLayout>
+            </ProtectedRoute>
           }
         />
 
-      </Route>
+        <Route
+  path="/empleados/:id"
+  element={
+    <ProtectedRoute>
+      <EmployeeDetailPage />
+    </ProtectedRoute>
+  }
+/>
 
-      {/* Redirigir página principal */}
-      <Route
-        path="/"
-        element={
-          <Navigate
-            to="/dashboard"
-            replace
-          />
-        }
+        {/* Redirigir raíz según autenticación */}
+
+        <Route
+          path="/"
+          element={<Navigate to="/login" replace />}
+        />
+
+        
+       {/* 404 */}
+<Route
+  path="*"
+  element={<NotFoundPage />}
+/>
+
+      </Routes>
+
+            <Toaster
+        position="top-right"
+        gutter={8}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            borderRadius: '8px',
+            background: '#1e293b',
+            color: '#f8fafc',
+            fontSize: '14px',
+          },
+          success: {
+            iconTheme: {
+              primary: '#22c55e',
+              secondary: '#f8fafc',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#f8fafc',
+            },
+            duration: 6000,
+          },
+        }}
       />
-
-      {/* Página 404 */}
-      <Route
-        path="*"
-        element={
-          <div
-            style={{
-              minHeight: '100vh',
-              background: '#f8fafc',
-              textAlign: 'center',
-              padding: '80px'
-            }}
-          >
-            <h2 style={{ color: '#1e293b' }}>
-              404 — Página no encontrada
-            </h2>
-
-            <Link to="/dashboard">
-              Volver al inicio
-            </Link>
-          </div>
-        }
-      />
-
-    </Routes>
+    </BrowserRouter>
   );
 }
 

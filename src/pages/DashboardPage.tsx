@@ -1,92 +1,61 @@
 // src/pages/DashboardPage.tsx
-
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { mockEmployees } from '../utils/mockData';
+import { useAuthStore } from '../store/authStore';
+import { useEmployees } from '../hooks/useEmployees';
+
+const statVariants = {
+  blue: { bg: 'bg-blue-100', text: 'text-blue-800' },
+  green: { bg: 'bg-green-100', text: 'text-green-800' },
+  yellow: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+};
 
 function DashboardPage() {
-  const userName = localStorage.getItem('userName') || 'usuario';
-  const [showWelcome, setShowWelcome] = useState(true);
-  const total = mockEmployees.length;
+  const userName = useAuthStore(state => {
+  if (!state.user) return 'invitado';
 
-  useEffect(() => {
-    const timer = setTimeout(() => setShowWelcome(false), 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const active = mockEmployees.filter(
-    (e) => e.status === 'active'
-  ).length;
-
-  const onLeave = mockEmployees.filter(
-    (e) => e.status === 'on_leave'
-  ).length;
+  return `${state.user.firstName} ${state.user.lastName}`;
+});
+  // Mismos datos que EmployeesPage — TanStack Query comparte el cache entre
+  // ambas pantallas, así que esto no dispara una petición nueva si ya se
+  // cargó la lista sin filtros en otra vista.
+  const { data } = useEmployees({});
+  const employees = data?.data || [];
+  const total = employees.length;
+  const active = employees.filter(e => e.status === 'active').length;
+  const onLeave = employees.filter(e => e.status === 'on_leave').length;
 
   const stats = [
-    {
-      label: 'Total empleados',
-      value: total,
-      color: 'bg-blue-100',
-      textColor: 'text-blue-800'
-    },
-    {
-      label: 'Activos',
-      value: active,
-      color: 'bg-green-100',
-      textColor: 'text-green-800'
-    },
-    {
-      label: 'En permiso',
-      value: onLeave,
-      color: 'bg-yellow-100',
-      textColor: 'text-yellow-800'
-    }
+    { label: 'Total empleados', value: total, variant: 'blue' as const },
+    { label: 'Activos', value: active, variant: 'green' as const },
+    { label: 'En permiso', value: onLeave, variant: 'yellow' as const },
   ];
 
   return (
     <div className="p-6">
-      {showWelcome && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 p-4"
-        >
-          <div className="w-full max-w-md rounded-xl bg-white p-8 text-center shadow-2xl">
-            <h2 className="text-2xl font-bold text-slate-800">
-              Bienvenido, {userName}
-            </h2>
-          </div>
-        </div>
-      )}
-      <h2 className="mb-6 text-2xl font-bold text-slate-800">
-        Resumen de tu equipo
-      </h2>
+      <h2 className="text-2xl font-bold text-slate-900 mb-1">Dashboard</h2>
+      <p className="text-slate-500 mb-6">Bienvenido, {userName}</p>
 
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className={`min-w-[160px] flex-1 rounded-xl p-6 ${stat.color}
-                        transition-shadow duration-200 hover:shadow-lg`}
-          >
-            <p className={`mb-1 text-sm ${stat.textColor}`}>
-              {stat.label}
-            </p>
-            <p className={`text-4xl font-bold ${stat.textColor}`}>
-              {stat.value}
-            </p>
-          </div>
-        ))}
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        {stats.map(stat => {
+          const style = statVariants[stat.variant];
+          return (
+            <div
+              key={stat.label}
+              className={`flex-1 min-w-40 p-6 rounded-xl ${style.bg} hover:shadow-lg transition-shadow duration-200`}
+            >
+              <p className={`mb-1 text-sm ${style.text}`}>{stat.label}</p>
+              <p className={`text-4xl font-bold ${style.text}`}>{stat.value}</p>
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex gap-3">
         <Link
           to="/empleados"
-          className="rounded-md bg-brand-800 px-5 py-2.5 text-sm text-white
-                     transition-colors hover:bg-brand-700"
+          className="px-5 py-2.5 bg-brand-800 hover:bg-brand-700 text-white rounded-lg text-sm transition-colors"
         >
-          Ver empleados
+          Ver empleados →
         </Link>
       </div>
     </div>

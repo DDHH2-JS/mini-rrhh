@@ -1,75 +1,59 @@
-# React + TypeScript + Vite
+# Mini RRHH - DDHH2-JS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación de gestión de empleados desarrollada con React, TypeScript, Vite y JSON Server.
 
-Currently, two official plugins are available:
+## Repositorio
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+https://github.com/DDHH2-JS/mini-rrhh
 
-## React Compiler
+## Sitio desplegado
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Pendiente de publicar en Vercel. Al terminar el despliegue, reemplaza esta línea con la URL asignada por Vercel antes de entregar.
 
-## Expanding the ESLint configuration
+## Ejecutar localmente
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Requiere Node.js y npm.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+En una terminal, inicia el API local:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm run mock-api
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+En otra terminal, inicia la aplicación:
 
+```bash
+npm run dev
+```
+
+Vite abrirá la aplicación en http://localhost:5173 y JSON Server en http://localhost:3001.
+El API local usa datos ficticios guardados en `db.json`.
+
+## Publicar el API en Render
+
+1. En Render, crea un **Blueprint** conectado al repositorio `DDHH2-JS/mini-rrhh`.
+2. Render detectará `render.yaml` y creará el servicio gratuito `mini-rrhh-ddhh2-js-api`.
+3. Cuando el servicio esté activo, verifica que `https://<tu-servicio>.onrender.com/employees` devuelva la lista de empleados.
+
+Este JSON Server es un API de demostración sin autenticación; no lo uses con datos personales o confidenciales.
+
+## Publicar el frontend en Vercel
+
+1. Importa `DDHH2-JS/mini-rrhh` en Vercel como proyecto Vite.
+2. En **Settings > Environment Variables**, configura:
+   - `VITE_API_URL`: URL base del API de Render, sin `/employees` al final.
+   - `VITE_AUTH_API_URL`: URL del API de autenticación autorizado para el grupo.
+3. Despliega o vuelve a desplegar el proyecto y copia la URL que Vercel asigne en la sección **Sitio desplegado** de este README.
+
+El API de autenticación configurado actualmente es externo. Si el inicio de sesión muestra un error de CORS, el administrador de ese API debe autorizar el dominio de Vercel.
+
+## Validación
+
+```bash
+npm run lint
+npm run build
 ```

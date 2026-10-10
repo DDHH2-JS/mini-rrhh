@@ -1,7 +1,3 @@
-// src/types/index.ts
-
-// --- Tipos base de dominio ---
-
 export type Department =
   | "Tecnología"
   | "Recursos Humanos"
@@ -12,7 +8,6 @@ export type Department =
 export type EmployeeRole = "admin" | "hr" | "employee";
  
 export type EmployeeStatus = "active" | "inactive" | "on_leave";
-
 
 export interface Employee {
   id: number;
@@ -28,8 +23,6 @@ export interface Employee {
   phone?: string;
 }
 
-
-
 // --- Tipos para creación y actualización ---
  
 export type CreateEmployeeDto = Omit<Employee, "id">;
@@ -37,20 +30,22 @@ export type UpdateEmployeeDto = Partial<CreateEmployeeDto>;
  
 // --- Tipos de autenticación ---
  
-export interface User {
-  id: number;
-  name: string;
+// --- Tipos de autenticación ---
+
+export interface AuthUser {
+  id: string;
+  firstName: string;
+  lastName: string;
   email: string;
   role: EmployeeRole;
-  token: string;
+  accessToken: string;
+  refreshToken: string;
 }
- 
+
 export interface LoginCredentials {
   email: string;
   password: string;
 }
-
-
 
 // --- Tipos de respuesta de la API ---
  
@@ -77,4 +72,3 @@ export interface NavItem {
   icon: string;
   allowedRoles: EmployeeRole[];
 }
-
