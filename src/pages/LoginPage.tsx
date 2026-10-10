@@ -31,6 +31,11 @@ function LoginPage() {
           <span className="text-5xl block mb-3">👥</span>
           <h1 className="text-2xl font-bold text-slate-900">Mini RRHH</h1>
           <p className="text-slate-500 mt-1">Inicia sesión para continuar</p>
+          {import.meta.env.DEV && (
+            <p className="text-sm text-blue-700 mt-2">
+              Modo local: usa cualquier correo y una contraseña de 8 caracteres o más.
+            </p>
+          )}
         </div>
 
         <form onSubmit={handleLogin} className="space-y-5">
@@ -61,6 +66,7 @@ function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Ingresa tu contraseña"
+              minLength={8}
               required
               disabled={isLoading}
               className="w-full px-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50"

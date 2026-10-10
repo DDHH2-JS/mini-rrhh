@@ -31,6 +31,21 @@ export const useAuthStore = create<AuthState>()(
       login: async (credentials: LoginCredentials) => {
         set({ isLoading: true, error: null });
 
+        if (import.meta.env.DEV) {
+          const user: AuthUser = {
+            id: 'local-demo-user',
+            firstName: 'Usuario',
+            lastName: 'Demo',
+            email: credentials.email,
+            role: 'admin',
+            accessToken: 'local-demo-token',
+            refreshToken: 'local-demo-refresh',
+          };
+          set({ user, isAuthenticated: true, isLoading: false });
+          toast.success(`Bienvenido, ${user.firstName} 👋`);
+          return;
+        }
+
         try {
           const user = await authService.login(credentials);
           set({ user, isAuthenticated: true, isLoading: false });
@@ -44,12 +59,12 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         const refreshToken = get().user?.refreshToken;
 
-        if (refreshToken) {
+        if (refreshToken && refreshToken !== 'local-demo-refresh') {
           await authService.logout(refreshToken);
-          toast.success('Sesión cerrada correctamente.');
         }
 
         set({ user: null, isAuthenticated: false, error: null });
+        toast.success('Sesión cerrada correctamente.');
       },
 
       clearError: () => set({ error: null }),
@@ -59,6 +74,10 @@ export const useAuthStore = create<AuthState>()(
 
         if (!refreshToken) {
           return null;
+        }
+
+        if (refreshToken === 'local-demo-refresh') {
+          return get().user?.accessToken ?? null;
         }
 
         refreshInFlight = authService

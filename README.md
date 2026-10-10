@@ -32,6 +32,7 @@ npm run dev
 
 Vite abrirá la aplicación en http://localhost:5173 y JSON Server en http://localhost:3001.
 El API local usa datos ficticios guardados en `db.json`.
+En el login local de desarrollo (`npm run dev`), puedes usar cualquier correo y una contraseña de al menos 8 caracteres (por ejemplo, `demo@local.test` / `demo1234`). Este acceso de demostración no está habilitado en producción.
 
 ## Publicar el API en Render
 
